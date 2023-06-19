@@ -2,6 +2,7 @@
 using Exato_Price_Table_Module.Enums;
 using Exato_Price_Table_Module.Repositories;
 using Exato_Price_Table_Module.Services.PriceTable;
+using Exato_Price_Table_Module.Services.ItemService;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
@@ -9,16 +10,16 @@ namespace Tests.PriceTableTests
 {
     internal class ServiceTests
     {
-        [Test]
-        public void CreateTable_InMemory_Success()
+        private void StartMinimalSetupInMemory(out PriceTableService priceTableService, out ModuleContext context, out ItemService itemService)
         {
             var factory = new ConnectionFactory();
-            var context = factory.CreateContextForSQLite();
-            var _repository = new Repository(context);
+            context = factory.CreateContextForSQLite();
+            var repository = new Repository(context);
 
-            var service = new PriceTableService(_repository);
+            priceTableService = new PriceTableService(repository);
+            itemService = new ItemService(repository);
 
-            service.CreatePriceTable(new PriceTable()
+            priceTableService.CreatePriceTable(new PriceTable()
             {
                 ExternalId = Guid.NewGuid(),
                 Name = "Teste",
@@ -30,32 +31,38 @@ namespace Tests.PriceTableTests
                 ValidTo = DateTime.Now.AddDays(30),
                 PrecificationType = PrecificationTypeEnum.FixedPrice
             });
+        }
+
+        [Test]
+        public void CreateTable_InMemory_Success()
+        {
+            StartMinimalSetupInMemory(out var priceTableService, out var context, out var itemService);
+
+
+            var newPriceTable = new PriceTable()
+            {
+                ExternalId = Guid.NewGuid(),
+                Name = "Segunda Tabela",
+                Active = true,
+                CreationDate = DateTime.Now,
+                Deleted = false,
+                Description = "Primeria tabela de teste",
+                ValidFrom = DateTime.Now,
+                ValidTo = DateTime.Now.AddDays(30),
+                PrecificationType = PrecificationTypeEnum.CumulativeRanges
+
+            };
+
+            priceTableService.CreatePriceTable(newPriceTable);
 
             var tables = context.PriceTables.ToList();
-            Assert.AreEqual(1, tables.Count);
+            Assert.That(tables.Contains(newPriceTable));
         }
 
         [Test]
         public void CreateItem_In_Table_In_Memory_Success()
         {
-            var factory = new ConnectionFactory();
-            var context = factory.CreateContextForSQLite();
-            var _repository = new Repository(context);
-
-            var service = new PriceTableService(_repository);
-
-            service.CreatePriceTable(new PriceTable()
-            {
-                ExternalId = Guid.NewGuid(),
-                Name = "Teste",
-                Active = true,
-                CreationDate = DateTime.Now,
-                Deleted = false,
-                Description = "Primeria tabela de teste",
-                ValidFrom = DateTime.Now,
-                ValidTo = DateTime.Now.AddDays(30),
-                PrecificationType = PrecificationTypeEnum.FixedPrice
-            });
+            StartMinimalSetupInMemory(out var priceTableService, out var context, out var itemService);
 
             var tables = context.PriceTables.ToList();
 
@@ -68,12 +75,12 @@ namespace Tests.PriceTableTests
                 TableId = tables[0].Id
             };
 
-            _repository.CreateItem(item, tables[0].ExternalId);
+            itemService.CreateItem(item, tables[0].ExternalId);
 
             var itemInTable = context.PriceTables.Include(pt => pt.Items).FirstOrDefault()?.Items[0];
 
             Assert.IsNotNull(itemInTable);
-            Assert.AreEqual(itemInTable, item);
+            Assert.That(item, Is.EqualTo(itemInTable));
         }
     }
 }

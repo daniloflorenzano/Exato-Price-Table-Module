@@ -4,7 +4,7 @@ using Exato_Price_Table_Module.Interfaces.Item;
 
 namespace Exato_Price_Table_Module.Services.ItemService
 {
-    internal class ItemService : IItemService
+    public class ItemService : IItemService
     {
         private readonly IRepository _repository;
 
