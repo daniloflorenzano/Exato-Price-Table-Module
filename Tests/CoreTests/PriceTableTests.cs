@@ -59,48 +59,68 @@ namespace Tests.CoreTests
         }
 
         [Test]
-        public void CalculatePrice_Of_Cumulative_Ranges_Price_Table()
+        public void CalculatePrice_Of_Non_CumulativeRanges_Ranges_Price_Table()
         {
             PriceTable table = new PriceTable()
             {
-                PrecificationType = PrecificationTypeEnum.CumulativeRanges,
+                PrecificationType = PrecificationTypeEnum.NonCumulativeRanges,
                 Items = new List<Item>()
                 {
                     new ()
                     {
                         ExternalId = Guid.NewGuid(),
-                        Description = "Item 1",
+                        Description = "Product 1: From 1 to 4",
                         CreationDate = DateTime.Now,
                         UpdateDate = DateTime.Now,
                         Deleted = false,
                         Id = 1,
-                        InitialValue = 1.0m,
+                        ProductId = 1,
+                        InitialValue = 4.0m,
+                        AmountFrom = 1,
+                        AmountTo = 4,
                     },
                     new ()
                     {
                         ExternalId = Guid.NewGuid(),
-                        Description = "Item 2",
+                        Description = "Product 1: From 5 onwards",
                         CreationDate = DateTime.Now,
                         UpdateDate = DateTime.Now,
                         Deleted = false,
                         Id = 2,
+                        ProductId = 1,
                         InitialValue = 2.0m,
+                        AmountFrom = 5,
                     },
                     new ()
                     {
                         ExternalId = Guid.NewGuid(),
-                        Description = "Item 3",
+                        Description = "Product 2: From 1 to 4",
                         CreationDate = DateTime.Now,
                         UpdateDate = DateTime.Now,
                         Deleted = false,
                         Id = 3,
-                        InitialValue = 3.0m,
+                        InitialValue = 2.0m,
+                        ProductId = 2,
+                        AmountFrom = 1,
+                        AmountTo = 4,
+                    },
+                    new ()
+                    {
+                        ExternalId = Guid.NewGuid(),
+                        Description = "Product 2: From 5 onwards",
+                        CreationDate = DateTime.Now,
+                        UpdateDate = DateTime.Now,
+                        Deleted = false,
+                        Id = 4,
+                        InitialValue = 1.0m,
+                        ProductId = 2,
+                        AmountFrom = 5,
                     }
                 }
             };
-            var purchasedItemsIds = new List<int>() { 1, 1, 2, 2, 2, 3, 3, 3, 3, 3 };
+            var purchasedItemsIds = new List<int>() { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2 };
             var price = table.CalculatePrice(purchasedItemsIds);
-            Assert.That(price, Is.EqualTo(23.0m));
+            Assert.That(price, Is.EqualTo(46.0m));
         }
     }
 }

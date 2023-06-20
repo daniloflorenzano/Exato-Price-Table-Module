@@ -7,7 +7,6 @@
         public int ProductId { get; set; }
         public string Description { get; set; }
         public decimal InitialValue { get; set; }
-        public decimal FinalValue { get; set; }
         public decimal Credits { get; set; }
         public int AmountFrom { get; set; }
         public int AmountTo { get; set; }

@@ -20,12 +20,23 @@ namespace Exato_Price_Table_Module.Entities
 
         public decimal CalculatePrice(List<int> purchasedItemsIds)
         {
+            if (PrecificationType == PrecificationTypeEnum.FixedPrice)
+                return CalculatePriceFromFixedPrecificationType(purchasedItemsIds);
+
+            if (PrecificationType == PrecificationTypeEnum.NonCumulativeRanges)
+                return CalculatePriceFromNonCumulativeRangesPrecificationType(purchasedItemsIds);
+
+            throw new Exception();
+        }
+
+        private decimal CalculatePriceFromFixedPrecificationType(List<int> purchasedItemsIds)
+        {
             var price = 0.0m;
 
             foreach (var purchasedItemId in purchasedItemsIds)
             {
                 var item = Items.FirstOrDefault(x => x.ProductId == purchasedItemId);
-                
+
                 if (item == null)
                     throw new Exception($"Item with id {purchasedItemId} not found in price table {Name}.");
 
@@ -33,6 +44,11 @@ namespace Exato_Price_Table_Module.Entities
             }
 
             return price;
+        }
+
+        private decimal CalculatePriceFromNonCumulativeRangesPrecificationType(List<int> purchasedItemsIds)
+        {
+            throw new NotImplementedException();
         }
     }
 }
