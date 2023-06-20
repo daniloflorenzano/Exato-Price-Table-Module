@@ -24,7 +24,7 @@ namespace Exato_Price_Table_Module.Entities
 
             foreach (var purchasedItemId in purchasedItemsIds)
             {
-                var item = Items.FirstOrDefault(x => x.Id == purchasedItemId);
+                var item = Items.FirstOrDefault(x => x.ProductId == purchasedItemId);
                 
                 if (item == null)
                     throw new Exception($"Item with id {purchasedItemId} not found in price table {Name}.");

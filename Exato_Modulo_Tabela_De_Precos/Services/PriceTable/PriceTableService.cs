@@ -1,5 +1,5 @@
 ﻿using Exato_Price_Table_Module.Interfaces;
-using Exato_Price_Table_Module.Interfaces.PriceTable;
+using Exato_Price_Table_Module.Interfaces.Services;
 
 namespace Exato_Price_Table_Module.Services.PriceTable
 {

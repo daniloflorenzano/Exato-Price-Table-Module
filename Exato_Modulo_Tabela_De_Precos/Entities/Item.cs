@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public Guid ExternalId { get; set; }
+        public int ProductId { get; set; }
         public string Description { get; set; }
         public decimal InitialValue { get; set; }
         public decimal FinalValue { get; set; }
