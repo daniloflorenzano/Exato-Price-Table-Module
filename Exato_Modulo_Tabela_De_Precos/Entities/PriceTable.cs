@@ -18,9 +18,21 @@ namespace Exato_Price_Table_Module.Entities
         public PrecificationTypeEnum PrecificationType { get; set; }
         public List<Item> Items { get; set; }
 
-        public decimal CalculatePrice(List<Item> items)
+        public decimal CalculatePrice(List<int> purchasedItemsIds)
         {
-            throw new NotImplementedException();
+            var price = 0.0m;
+
+            foreach (var purchasedItemId in purchasedItemsIds)
+            {
+                var item = Items.FirstOrDefault(x => x.Id == purchasedItemId);
+                
+                if (item == null)
+                    throw new Exception($"Item with id {purchasedItemId} not found in price table {Name}.");
+
+                price += item.InitialValue;
+            }
+
+            return price;
         }
     }
 }
