@@ -9,7 +9,7 @@
         public decimal InitialValue { get; set; }
         public decimal Credits { get; set; }
         public int AmountFrom { get; set; }
-        public int AmountTo { get; set; }
+        public int? AmountTo { get; set; }
         public bool Deleted { get; set; }
         public DateTime DeletedDate { get; set; }
         public DateTime CreationDate { get; set; }

@@ -35,7 +35,7 @@ namespace Exato_Price_Table_Module.Entities
 
             foreach (var purchasedItemId in purchasedItemsIds)
             {
-                var item = Items.FirstOrDefault(x => x.ProductId == purchasedItemId);
+                var item = Items.FirstOrDefault(i => i.ProductId == purchasedItemId);
 
                 if (item == null)
                     throw new Exception($"Item with id {purchasedItemId} not found in price table {Name}.");
@@ -48,7 +48,40 @@ namespace Exato_Price_Table_Module.Entities
 
         private decimal CalculatePriceFromNonCumulativeRangesPrecificationType(List<int> purchasedItemsIds)
         {
-            throw new NotImplementedException();
+            var price = 0.0m;
+
+            var allProductsExistentInTable = Items
+                .Select(i => i)
+                .Where(i => purchasedItemsIds.Contains(i.ProductId))
+                .ToList();
+
+            foreach (var product in allProductsExistentInTable)
+            {
+
+                var productInPurchasedItemsCount = purchasedItemsIds
+                    .Select(i => i)
+                    .Count(i => i == product.ProductId);
+
+                for (var i = 0; i < productInPurchasedItemsCount; i++)
+                {
+                    var actualItemAmount = i + 1;
+
+                    if (actualItemAmount < product.AmountFrom)
+                        continue;
+
+
+                    if (actualItemAmount >= product.AmountFrom && actualItemAmount <= product.AmountTo)
+                        price += product.InitialValue;
+
+                    else if (actualItemAmount >= product.AmountFrom && product.AmountTo is null)
+                        price += product.InitialValue;
+                    
+                    else
+                        break;
+                }
+            }
+
+            return price;
         }
     }
 }

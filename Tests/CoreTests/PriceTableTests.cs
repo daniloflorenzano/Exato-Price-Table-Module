@@ -90,6 +90,7 @@ namespace Tests.CoreTests
                         ProductId = 1,
                         InitialValue = 2.0m,
                         AmountFrom = 5,
+                        AmountTo = null
                     },
                     new ()
                     {
@@ -115,10 +116,11 @@ namespace Tests.CoreTests
                         InitialValue = 1.0m,
                         ProductId = 2,
                         AmountFrom = 5,
+                        AmountTo = null
                     }
                 }
             };
-            var purchasedItemsIds = new List<int>() { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2 };
+            var purchasedItemsIds = new List<int>() { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2 };
             var price = table.CalculatePrice(purchasedItemsIds);
             Assert.That(price, Is.EqualTo(46.0m));
         }
