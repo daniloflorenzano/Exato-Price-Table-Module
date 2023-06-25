@@ -20,13 +20,16 @@ namespace Exato_Price_Table_Module.Entities
 
         public decimal CalculatePrice(List<int> purchasedItemsIds)
         {
-            if (PrecificationType == PrecificationTypeEnum.FixedPrice)
+            if (PrecificationType is PrecificationTypeEnum.FixedPrice)
                 return CalculatePriceFromFixedPrecificationType(purchasedItemsIds);
 
-            if (PrecificationType == PrecificationTypeEnum.NonCumulativeRanges)
+            if (PrecificationType is PrecificationTypeEnum.NonCumulativeRanges)
                 return CalculatePriceFromNonCumulativeRangesPrecificationType(purchasedItemsIds);
 
-            throw new Exception();
+            if (PrecificationType is PrecificationTypeEnum.CumulativeRanges)
+                return CalculatePriceFromCumulativeRangesPrecificationType(purchasedItemsIds);
+
+            throw new Exception($"Precification type {PrecificationType} not implemented.");
         }
 
         private decimal CalculatePriceFromFixedPrecificationType(List<int> purchasedItemsIds)
@@ -82,6 +85,62 @@ namespace Exato_Price_Table_Module.Entities
             }
 
             return price;
+        }
+
+        private decimal CalculatePriceFromCumulativeRangesPrecificationType(List<int> purchasedItemsIds)
+        {
+            var allProductsExistentInTable = Items
+                .Select(i => i)
+                .Where(i => purchasedItemsIds.Contains(i.ProductId))
+                .ToList();
+
+            var pricesByProduct = new List<decimal>();
+            var productsAlreadyCalculated = 0;
+            int? lastProductCalculatedId = null;
+
+            foreach (var product in allProductsExistentInTable)
+            {
+                if (lastProductCalculatedId == product.ProductId)
+                    pricesByProduct.RemoveAt(pricesByProduct.Count - 1);
+
+                var productInPurchasedItemsCount = purchasedItemsIds
+                    .Select(i => i)
+                    .Count(i => i == product.ProductId);
+
+                
+
+                for (var i = 0; i < productInPurchasedItemsCount; i++)
+                {
+                    var actualItemAmount = i + 1;
+
+                    if (actualItemAmount < product.AmountFrom)
+                        continue;
+
+                    if (lastProductCalculatedId != product.ProductId)
+                        productsAlreadyCalculated = 0;
+
+
+                    if (actualItemAmount >= product.AmountFrom && actualItemAmount <= product.AmountTo)
+                    {
+                        productsAlreadyCalculated++;
+                        lastProductCalculatedId = product.ProductId;
+                    }
+
+
+                    else if (actualItemAmount >= product.AmountFrom && product.AmountTo is null)
+                    {
+                        productsAlreadyCalculated++;
+                        lastProductCalculatedId = product.ProductId;
+                    }
+
+                    else
+                        break;
+                }
+
+                pricesByProduct.Add(productsAlreadyCalculated * product.InitialValue);
+            }
+
+            return pricesByProduct.Sum();
         }
     }
 }
