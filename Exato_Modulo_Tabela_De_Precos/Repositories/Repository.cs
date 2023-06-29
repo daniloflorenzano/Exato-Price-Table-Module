@@ -21,12 +21,14 @@ namespace Exato_Price_Table_Module.Repositories
 
         public void UpdatePriceTable(PriceTable priceTable)
         {
-            throw new NotImplementedException();
+            _context.Entry(priceTable).State = EntityState.Modified;
+            _context.SaveChanges();
         }
 
         public void DeletePriceTable(PriceTable priceTable)
         {
-            throw new NotImplementedException();
+            _context.Entry(priceTable).State = EntityState.Modified;
+            _context.SaveChanges();
         }
 
         public PriceTable? GetPriceTableByExternalId(Guid externalId)
@@ -34,6 +36,7 @@ namespace Exato_Price_Table_Module.Repositories
             var table = _context.Set<PriceTable>()
                 .Include(pt => pt.Items)
                 .FirstOrDefault(x => x.ExternalId == externalId);
+            
             return table;
         }
 

@@ -82,5 +82,20 @@ namespace Tests.PersistenceTests
             Assert.IsNotNull(itemInTable);
             Assert.That(item, Is.EqualTo(itemInTable));
         }
+
+        [Test]
+        public void Update_Table_In_Memory()
+        {
+            StartMinimalSetupInMemory(out var priceTableService, out var context, out var itemService);
+
+            var tableToEdit = context.PriceTables.FirstOrDefault();
+            
+            tableToEdit.Name = "Edited Name";
+            priceTableService.UpdatePriceTable(tableToEdit);
+            
+            var editedTable = context.PriceTables.FirstOrDefault();
+            
+            Assert.That(editedTable.Name, Is.EqualTo("Edited Name"));
+        }
     }
 }

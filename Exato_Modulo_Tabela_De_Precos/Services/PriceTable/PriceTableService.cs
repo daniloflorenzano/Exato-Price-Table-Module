@@ -19,17 +19,35 @@ namespace Exato_Price_Table_Module.Services.PriceTable
 
         public void UpdatePriceTable(Entities.PriceTable priceTable)
         {
-            throw new NotImplementedException();
+            var existentTable = _repository.GetPriceTableByExternalId(priceTable.ExternalId);
+            if (existentTable is null)
+                throw new Exception("Price table not found");
+
+            priceTable.UpdateDate = DateTime.Now;
+
+            _repository.UpdatePriceTable(priceTable);
         }
 
         public void DeletePriceTable(Entities.PriceTable priceTable)
         {
-            throw new NotImplementedException();
+            var existentTable = _repository.GetPriceTableByExternalId(priceTable.ExternalId);
+            if (existentTable is null)
+                throw new Exception("Price table not found");
+
+            priceTable.Active = false;
+            priceTable.Deleted = true;
+            priceTable.DeletionDate = DateTime.Now;
+            
+            _repository.DeletePriceTable(priceTable);
         }
 
         public Entities.PriceTable GetPriceTableByExternalId(Guid externalId)
         {
-            throw new NotImplementedException();
+            var priceTable = _repository.GetPriceTableByExternalId(externalId);
+            if (priceTable is null)
+                throw new Exception("Price table not found");
+
+            return priceTable;
         }
 
         public List<Entities.PriceTable> GetPriceTables()
