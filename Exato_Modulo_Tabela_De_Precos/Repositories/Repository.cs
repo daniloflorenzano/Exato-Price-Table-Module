@@ -6,7 +6,7 @@ namespace Exato_Price_Table_Module.Repositories
 {
     public class Repository : IRepository
     {
-        public readonly DbContext _context;
+        private readonly DbContext _context;
 
         public Repository(DbContext context)
         {
